@@ -299,6 +299,16 @@ function preload() {
   facedetectOn =false;
   videoOn = false;
   
+  facedetectReady = true;
+    const faceOptions = {
+    withLandmarks: true,
+    withExpressions: false,
+    withDescriptors: false,
+    minConfidence: 0.5,
+   
+  };
+    faceapi = ml5.faceApi(video, faceOptions, faceReady);
+    faceapi.detect(gotFaces);
 
   
   
@@ -424,7 +434,7 @@ function draw() {
   musicPlay();
   textFont(basicFont);
   if (intro) {
-    
+    turnOffFaceDetect();
     i++;
     cursor();
     if (i % 10 == 0) {
