@@ -94,9 +94,11 @@ let no_true =[];
 let togallery_popup;
 
 let frames =[];
-let framesback =['#c9bfd8','#6c7d45','#6a92b5'];
+let framesback =['#c9bfd8','#6c7d45','#6a92b5','#f8d9ae'];
 let fromDrawing = false;
-
+let explains =[];
+let ghost1_bubble;
+let ghost1_chats =['안녕!\n 인생사진관에 온 걸 환영해.\n자세한 설명이 듣고 싶으면\n나를 눌러줘.','음...\n일단 내 친구 @@@가\n다양한 필터를\n써볼 수 있게 해줄 거야','다른 친구 ###는\n직접 너만의 필터를\n그리는 걸 도와줄 거고!\n솜씨를 뽐내봐!','갤러리에 가면\n우리가 준비한\n명예의 전당이 있어!\n종강에 성공한 자!','\n내 설명은 여기서 끝이야!\n하핫','\n지금부터는\n그냥 멋진 대사를 칠 거야!\n','중요한 건,\n과제전을 향한\n"꺾이지 않는 마음"\n이라구\n','싸늘하다.\n가슴에 비수가 날아와 꽂힌다.\n하지만 괜찮다.\n이제 종강이니까.','\n이거 다 그리면\n우리 종강하는 거다','\n이거 과제전하기\n딱 좋은 날씨네...','신에게는\n아직...\n3명의 팀플 동료가\n남아 있습니다','\n개강은\n돌아오는거야~~~','꼭 그렇게..\n늦게 종강해야만..\n속이 후련하셨나요\n교수님들..?','\n어찌,\n내가 A+을 받을 상인가?','뭐야...\n아직도 내 이야기가\n궁금한 거야??!\nㅎㅎ','그렇다면 내가\n비밀 하나 얘기해 줄게\n너만 아는 거다?\n다른데 얘기하면 곤란해!','화이트 크리스마스\n기대되지 않아?\n눈이 왔으면 좋겠어!\n펑펑!'];
 
 let facedetect;
 let facedetectReady;
@@ -120,7 +122,10 @@ function preload() {
   gallery_light[0] = loadImage("assets/gallery/gallery_light1.png");
   gallery_light[1] = loadImage("assets/gallery/gallery_light2.png");
   gallery_light[2] = loadImage("assets/gallery/gallery_light3.png");
-  
+  explains[0] = loadImage("assets/explain_1.png");
+  explains[1] = loadImage("assets/explain_2.png");
+  explains[2] = loadImage("assets/explain_3.png");
+  ghost1_bubble = loadImage("assets/ghost1_bubble.png");
   
   ghost_takePhoto =loadImage("assets/ghost_takePhoto.png");
   saveGallery_true[0] =loadImage("assets/saveGallery_true.png");
@@ -132,7 +137,7 @@ function preload() {
   download_false=loadImage("assets/download_false.png");
   download = new button(download_true,download_false);
   
-  for(let i=1;i<=3;i++){
+  for(let i=1;i<=4;i++){
     let array1 = ["assets/frame/frame", i, "_top.png"];
     imgName = join(array1, "");
     frames[i - 1] = loadImage(imgName);
@@ -186,7 +191,7 @@ function preload() {
     facefilter[i - 1] = loadImage(imgName);
   }
   
-   
+  
   for (let i = 1; i <= 7; i++) {
     let array1 = ["assets/background00-", i, ".png"];
     imgName = join(array1, "");
@@ -298,9 +303,8 @@ function preload() {
   facedetectReady= false;
   facedetectOn =false;
   videoOn = false;
-  
-  facedetectReady = true;
-    const faceOptions = {
+  //faceapi = ml5.faceApi(video, faceOptions, faceReady);
+ const faceOptions = {
     withLandmarks: true,
     withExpressions: false,
     withDescriptors: false,
@@ -309,12 +313,7 @@ function preload() {
   };
     faceapi = ml5.faceApi(video, faceOptions, faceReady);
     faceapi.detect(gotFaces);
-
-  
-  
-  //faceapi = ml5.faceApi(video, faceOptions, faceReady);
-  
-  
+   
 }
 
 
@@ -426,7 +425,7 @@ let frameNum = 0;
 let selectFramePage_mode = 0;
 let answer = 0;
 let curr_brush_color ="#000000";
-
+let chatnum=0;
 function draw() {
   fullscreen();
   REStart.mouseClicked(fromStart);
@@ -599,11 +598,12 @@ function draw() {
       drawMask.mouseNotOver();
     }
     if (mouseX > 905 && mouseX < 955 && mouseY > 495 && mouseY < 600) {
+      mode =4;
       dialogue.mouseOver(back_framenum);
     } else {
       dialogue.mouseNotOver();
     }
-    if (mouseX > 710 && mouseX < 780 && mouseY > 530 && mouseY < 600) {
+    if (mouseX > 690 && mouseX < 830 && mouseY > 530 && mouseY < 600) {
       gallery.mouseOver(back_framenum);
       mode = 3;
     } else {
@@ -611,9 +611,25 @@ function draw() {
     }
 
     browseMask.display(); // 각각의 버튼이 보이게 함
-    dialogue.display();
+    
     drawMask.display();
     gallery.display();
+    if(chatnum%ghost1_chats.length==1){
+      image(explains[0],0,0);
+    }
+    if(chatnum%ghost1_chats.length==2){
+      image(explains[1],0,0);
+    }
+    if(chatnum%ghost1_chats.length==3){
+      image(explains[2],0,0);
+    }
+    dialogue.display();
+    image(ghost1_bubble,0,0);
+    textAlign(CENTER,BASELINE);
+    textSize(30);
+    fill("#405381");
+    text(ghost1_chats[chatnum%ghost1_chats.length],1065,180);
+    
   }
   if (!mainScreen && !intro) {
     translate(0, 0);
@@ -992,10 +1008,10 @@ function draw() {
     
     image(finalphoto,140,10); 
     
-    image(raw_photos[final_photos[0]],230,51,400,300);
-    image(raw_photos[final_photos[1]],230,370,400,300);
-    image(raw_photos[final_photos[2]],640,51,400,300);
-    image(raw_photos[final_photos[3]],640,370,400,300);
+    image(raw_photos[final_photos[0]],235,55,400,300);
+    image(raw_photos[final_photos[1]],235,365,400,300);
+    image(raw_photos[final_photos[2]],645,55,400,300);
+    image(raw_photos[final_photos[3]],645,365,400,300);
     image(frames[frameNum%frames.length],140,10,1000,700);
     
     
@@ -1122,9 +1138,14 @@ function mousePressed() {
         mainScreen = false;
         buttonSound();
         break;
+      case 4:
+        chatnum++;
+        break;
+        
     }
   } else {
     if (gohome) {
+      chatnum=0;
       turnOffFaceDetect();
       turnOffCapture();
       mode = 0;
