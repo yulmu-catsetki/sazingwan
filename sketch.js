@@ -779,7 +779,7 @@ function draw() {
     }
   }
   if (checkMaskPage) {
-    Cursor();
+    cursor();
     goDrawMask = false;
     goPhoto = false;
 
