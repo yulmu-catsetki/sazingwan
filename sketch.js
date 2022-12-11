@@ -1055,8 +1055,16 @@ function draw() {
     if (i % 16 == 0) {
       back_framenum++;
     }
-    image(gallery_background,0,0);
     
+    
+    image(gallery_background,0,0);
+    if(mouseIsPressed){
+      for(let j=galleryPhotos.length-1;j>=0;j--){
+       if(galleryPhotos[j].activate()){
+         break;
+       }
+    }
+    }
     for(let j=0;j<galleryPhotos.length;j++){
      galleryPhotos[j].display();
     }
@@ -1117,6 +1125,7 @@ function mousePressed() {
       buttonSound();
     }
   }
+  
   if (mainScreen) {
     switch (mode) {
       case 1:
@@ -1201,7 +1210,7 @@ function mousePressed() {
           curr_brush_color = colors[j].returnColor();
           buttonSound();
         }
-      }
+      }  
     
     if (goCheckMask) {
       turnOnFaceDetect();
