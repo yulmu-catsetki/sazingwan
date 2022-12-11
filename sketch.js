@@ -1,7 +1,7 @@
 //intro assets
 let intro_ghosts = [];
 let introbackground;
-
+let total_image_num = 20;
 let Ghost1 = [];
 let Ghost1_talk = [];
 let Ghost2 = [];
@@ -15,6 +15,11 @@ let talk_box;
 //main screen assets
 let button_sound;
 let camera_sound;
+
+let qrImg;
+let qr;
+let forQRurl;
+let tagDiv;
 
 let background00 = [];
 let browseMask_false;
@@ -36,6 +41,9 @@ let leftArrow_false;
 let eraser_cursor;
 let brush_cursor;
 let background01;
+
+let database;
+let storage;
 
 let Dice_false;
 let Dice_true = [];
@@ -104,6 +112,19 @@ let facedetect;
 let facedetectReady;
 let facedetectOn;
 let videoOn;
+
+
+
+//이스터에그용
+const SNOWFLAKES_PER_LAYER = 200;
+const MAX_SIZE = 7;
+const GRAVITY = 0.45;
+const LAYER_COUNT = 5;
+
+const WIND_SPEED = 1;
+const WIND_CHANGE = 0.0025;
+
+const SNOWFLAKES = [];
 
 function preload() {
   
@@ -317,9 +338,13 @@ function preload() {
 }
 
 
-
+p5.disableFriendlyErrors = true;
 
 function setup() {
+  
+  tagDiv = createDiv();
+  // position it:
+  tagDiv.position(30, 30);
   
   mycanvas = createCanvas(1280, 720);
   music_mainScreen.loop();
@@ -348,6 +373,36 @@ function setup() {
   skip = createButton('NEXT');
   skip.size(100,40);
   skip.hide();
+  for (let l = 0; l < LAYER_COUNT; l++) {
+    SNOWFLAKES.push([]);
+    for (let i = 0; i < SNOWFLAKES_PER_LAYER; i++) {
+      SNOWFLAKES[l].push({
+        x: random(width),
+        y: random(height),
+        mass: random(0.75, 1.25),
+        l: l + 1
+      });
+    }
+}
+  var config = {
+  apiKey: "AIzaSyAZ60wxUtci6ZvctVY0BZy4Smc_71B_WtM",
+  authDomain: "sazingwan-ad11e.firebaseapp.com",
+  projectId: "sazingwan-ad11e",
+  storageBucket: "sazingwan-ad11e.appspot.com",
+  databaseURL : "https://sazingwan-ad11e-default-rtdb.firebaseio.com/",
+  messagingSenderId: "1077861169840",
+  appId: "1:1077861169840:web:a82346389c9d99670a5975",
+  measurementId: "G-SP0S9C7J92",
+  storageURL : "gs://sazingwan-ad11e.appspot.com"
+};
+
+   firebase.initializeApp(config); 
+  console.log(firebase);
+  database = firebase.database();
+  storage = firebase.storage();
+  
+ 
+
 }
 
 
@@ -417,7 +472,7 @@ let showPOPUP =false;
 
 let back_framenum = 0;
 let i = 0;
-let facefilterNum = 1;
+let facefilterNum =0 ;
 let brushMode = 0;
 let browseMaskPage_mode = 0;
 let drawstart = 0;
@@ -498,7 +553,7 @@ function draw() {
     if (back_framenum >= 6 && back_framenum < 18) {
       ghost1.starttalking();
       textSize(32);
-      fill(0);
+      fill("#FF884F");
       text("새로운 사람이다!!", 150, 550);
     }
     if (back_framenum == 18) {
@@ -506,7 +561,7 @@ function draw() {
     }
     if (back_framenum >=18  && back_framenum < 30) {
       ghost2.starttalking();
-
+      fill("#DD6696");
       text("...안녕", 150, 550);
     }
 
@@ -516,6 +571,7 @@ function draw() {
 
     if (back_framenum >= 30 && back_framenum < 42) {
       ghost3.starttalking();
+      fill("#6368D8");
       text("수집 가치가 있어 보이는군.", 150, 550);
     }
 
@@ -526,6 +582,7 @@ function draw() {
     if (back_framenum >= 42 && back_framenum < 54) {
       ghost4.starttalking();
       ghost3.stoptalking();
+      fill("#367A38");
       text("반가워~ 헤헤...", 150, 550);
     }
   
@@ -546,24 +603,28 @@ function draw() {
     switch(curr_line){
       case 1:
         ghost2.starttalking();
+        fill("#DD6696");
         text("우린 종강의 정령들이야. 매년 종강까지 \n잘 버틴 용감한 학생들을 촬영해서 \n과제의 전당에 올리는 역할을 하고 있지.",150, 520);
         break;
         
       case 2:
         ghost2.stoptalking();
         ghost3.starttalking();
+        fill("#6368D8");
         text("매 학기, 가장 마음의 여유가 있을 때, \n각자 제일 빛나는 자기다운 모습을 남겨주기 위한\n'인생사진관'이랍니다.",150,520);
         break;
         
       case 3:
         ghost3.stoptalking();
         ghost1.starttalking();
+        fill("#FF884F");
         text("그냥 사진이 아니야!!! \n필터를 자유롭게 그려서 가장 너다운 모습을 남길 수 있다고! \n세상에 하나뿐인 네 모습을 찍어봐!",150,520);
         break;
       
       case 4:
         ghost1.stoptalking();
         ghost4.starttalking();
+        fill("#367A38");
         text("좋아~ \n이제 우리랑 인생사진관으로 가보자\n하암...",150,520);
         break;
       case 5:
@@ -629,6 +690,11 @@ function draw() {
     textSize(30);
     fill("#405381");
     text(ghost1_chats[chatnum%ghost1_chats.length],1065,180);
+    if(chatnum>16){
+      letitSnow();
+    }
+    
+    
     
   }
   if (!mainScreen && !intro) {
@@ -648,6 +714,14 @@ function draw() {
     translate(0, 0);
     push();
     goPhoto=false;
+     array1 = [facefilterNum % facefilter.length+1,'/',facefilter.length];
+    let filter_situation = join(array1, "");
+    textAlign(CENTER, CENTER);
+    textSize(40);
+    fill("#405381");
+    text(filter_situation,1120,50);
+    
+    
     browseMaskPage_mode = 0;
     rightArrow.display();
     leftArrow.display();
@@ -1047,6 +1121,8 @@ function draw() {
   
   if(sharePhotoPage){
     
+    tagDiv.html(qrImg);
+
   }
   
   
@@ -1101,6 +1177,18 @@ function musicPlay() {
   }
 }
 
+function letitSnow()
+{  for (let l = 0; l < SNOWFLAKES.length; l++) {
+    const LAYER = SNOWFLAKES[l];
+    fill("#ffffff");
+    for (let i = 0; i < LAYER.length; i++) {
+      const snowflake = LAYER[i];
+      circle(snowflake.x, snowflake.y, (snowflake.l * MAX_SIZE) / LAYER_COUNT);
+      updateSnowflake(snowflake);
+    }
+  }
+  
+}
 function buttonSound(){
   button_sound.play();
 }
@@ -1113,7 +1201,20 @@ function addline(){
   curr_line++;
   buttonSound();
 }
+// Helper function to prepare a given snowflake for the next frame
+function updateSnowflake(snowflake) {
+  const diameter = (snowflake.l * MAX_SIZE) / LAYER_COUNT;
+  if (snowflake.y > height + diameter) snowflake.y = -diameter;
+  else snowflake.y += GRAVITY * snowflake.l * snowflake.mass;
 
+  // Get the wind speed at the given layer and area of the page
+  const wind =
+    noise(snowflake.l, snowflake.y * WIND_CHANGE, frameCount * WIND_CHANGE) -
+    0.5;
+  if (snowflake.x > width + diameter) snowflake.x = -diameter;
+  else if (snowflake.x < -diameter) snowflake.x = width + diameter;
+  else snowflake.x += wind * WIND_SPEED * snowflake.l;
+}
 
 function mousePressed() {
   if (intro) {
@@ -1148,6 +1249,7 @@ function mousePressed() {
         buttonSound();
         break;
       case 4:
+        buttonSound();
         chatnum++;
         break;
         
@@ -1185,12 +1287,12 @@ function mousePressed() {
   }
   if (browseMaskPage) {
     switch (browseMaskPage_mode) {
-      case 1:
+      case 2:
         facefilterNum++;
         browseMaskPage_mode = 0;
         buttonSound();
         break;
-      case 2:
+      case 1:
         facefilterNum += facefilter.length-1;
         browseMaskPage_mode = 0;
         buttonSound();
@@ -1248,7 +1350,29 @@ function mousePressed() {
   }
   if(selectFramePage){
      if(goShare){
-       buttonSound();
+      buttonSound();
+      total_image_num++;
+       
+      let storageRef = storage.ref();
+      let filesRef = storageRef.child('images/' +  year()+month()+day()+hour()+minute()+second() + '.jpg');
+      
+       
+      finalphoto_fordownload.loadPixels();
+      var convertdata = finalphoto_fordownload.canvas.toDataURL();
+      //convertdata.save('photo','png');
+
+      const uploadStart = filesRef.putString(convertdata,'data_url');
+      uploadStart.then(uploadTaskSnapshot=>{
+        uploadTaskSnapshot.ref.getDownloadURL().then((url)=>{
+          forQRurl=url
+          qr = qrcode(0, 'L');
+          qr.addData(forQRurl);
+          qr.make(); 
+          qrImg = qr.createImgTag(5, 20, "qr code");
+        });
+        
+      });
+       
       
       sharePhotoPage = true;
       selectFramePage = false;
