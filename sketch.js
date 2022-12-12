@@ -11,7 +11,7 @@ let Ghost3_talk = [];
 let Ghost4 = [];
 let Ghost4_talk = [];
 let talk_box;
-
+let all_clear =false;
 //main screen assets
 let button_sound;
 let camera_sound;
@@ -22,6 +22,7 @@ let forQRurl;
 let tagDiv;
 
 let background00 = [];
+let background_christmas = [];
 let browseMask_false;
 let browseMask_true = [];
 let dialogue_false;
@@ -34,6 +35,7 @@ let home_true = [];
 let home_false;
 let music_mainScreen;
 let music_nextScreen;
+let music_ending;
 let rightArrow_true = [];
 let rightArrow_false;
 let leftArrow_true = [];
@@ -106,30 +108,34 @@ let framesback =['#c9bfd8','#6c7d45','#6a92b5','#f8d9ae'];
 let fromDrawing = false;
 let explains =[];
 let ghost1_bubble;
-let ghost1_chats =['안녕!\n 인생사진관에 온 걸 환영해.\n자세한 설명이 듣고 싶으면\n나를 눌러줘.','음...\n일단 내 친구 @@@가\n다양한 필터를\n써볼 수 있게 해줄 거야','다른 친구 ###는\n직접 너만의 필터를\n그리는 걸 도와줄 거고!\n솜씨를 뽐내봐!','갤러리에 가면\n우리가 준비한\n명예의 전당이 있어!\n종강에 성공한 자!','\n내 설명은 여기서 끝이야!\n하핫','\n지금부터는\n그냥 멋진 대사를 칠 거야!\n','중요한 건,\n과제전을 향한\n"꺾이지 않는 마음"\n이라구\n','싸늘하다.\n가슴에 비수가 날아와 꽂힌다.\n하지만 괜찮다.\n이제 종강이니까.','\n이거 다 그리면\n우리 종강하는 거다','\n이거 과제전하기\n딱 좋은 날씨네...','신에게는\n아직...\n3명의 팀플 동료가\n남아 있습니다','\n개강은\n돌아오는거야~~~','꼭 그렇게..\n늦게 종강해야만..\n속이 후련하셨나요\n교수님들..?','\n어찌,\n내가 A+을 받을 상인가?','뭐야...\n아직도 내 이야기가\n궁금한 거야??!\nㅎㅎ','그렇다면 내가\n비밀 하나 얘기해 줄게\n너만 아는 거다?\n다른데 얘기하면 곤란해!','화이트 크리스마스\n기대되지 않아?\n눈이 왔으면 좋겠어!\n펑펑!'];
+let ghost1_chats =['안녕!\n 인생사진관에 온 걸 환영해.\n자세한 설명이 듣고 싶으면\n나를 눌러줘.','음...\n일단 내 친구 정이가\n다양한 필터를\n써볼 수 있게 해줄 거야','다른 친구 뭉이는\n직접 너만의 필터를\n그리는 걸 도와줄 거고!\n솜씨를 뽐내봐!','갤러리에 가면\n우리가 준비한\n명예의 전당이 있어!\n종강에 성공한 자!','\n내 설명은 여기서 끝이야!\n하핫','\n지금부터는\n그냥 멋진 대사를 칠 거야!\n','중요한 건,\n과제전을 향한\n"꺾이지 않는 마음"\n이라구\n','싸늘하다.\n가슴에 비수가 날아와 꽂힌다.\n하지만 괜찮다.\n이제 종강이니까.','\n이거 다 그리면\n우리 종강하는 거다','\n이거 과제전하기\n딱 좋은 날씨네...','신에게는\n아직...\n3명의 팀플 동료가\n남아 있습니다','\n개강은\n돌아오는거야~~~','꼭 그렇게..\n늦게 종강해야만..\n속이 후련하셨나요\n교수님들..?','\n어찌,\n내가 A+을 받을 상인가?','뭐야...\n아직도 내 이야기가\n궁금한 거야??!\nㅎㅎ','그렇다면 내가\n비밀 하나 얘기해 줄게\n너만 아는 거다?\n다른데 얘기하면 곤란해!','화이트 크리스마스\n기대되지 않아?\n눈이 왔으면 좋겠어!\n펑펑!'];
 
 let facedetect;
 let facedetectReady;
 let facedetectOn;
 let videoOn;
 
-
+let qrpresent;
+let savecomplete_false;
+let savecomplete_true =[];
+let ending_ghosts=[];
 
 //이스터에그용
 const SNOWFLAKES_PER_LAYER = 200;
 const MAX_SIZE = 7;
 const GRAVITY = 0.45;
 const LAYER_COUNT = 5;
-
+let music_mainScreen_christmas;
 const WIND_SPEED = 1;
 const WIND_CHANGE = 0.0025;
-
+let easteregg = false;
 const SNOWFLAKES = [];
 
 function preload() {
-  
+  music_mainScreen_christmas = loadSound("assets/christmas/music_mainScreen_christmas.m4a");
   music_mainScreen = loadSound("assets/music_mainScreen.mp3");
   music_nextScreen = loadSound("assets/music_nextScreen.mp3");
+  music_ending = loadSound("assets/ending/music_ending.mp3");
   button_sound = loadSound("assets/button_click.wav");
   camera_sound = loadSound("assets/camera.mp3");
   for (let i = 1; i <= 6; i++) {
@@ -217,6 +223,10 @@ function preload() {
     let array1 = ["assets/background00-", i, ".png"];
     imgName = join(array1, "");
     background00[i - 1] = loadImage(imgName);
+    let array2 = ["assets/christmas/background_christmas-", i, ".png"];
+    imgName = join(array2, "");
+    
+    background_christmas[i - 1] = loadImage(imgName);
   }
   browseMask_false = loadImage("assets/browseMask_false.png");
   for (let i = 1; i <= 4; i++) {
@@ -311,9 +321,21 @@ function preload() {
     let array1 = ["assets/drawMask_help_true-", i, ".png"];
     imgName = join(array1, "");
     drawMask_help_true[i - 1] = loadImage(imgName);
+    
+    let array2 = ["assets/ending/ending_ghosts-", i, ".png"];
+    imgName = join(array2, "");
+    ending_ghosts[i - 1] = loadImage(imgName);
+    
+    
   }
   drawMask_help_false = loadImage("assets/drawMask_help_false.png");
   drawMask_help = new button(drawMask_help_true, drawMask_help_false);
+  
+  qrpresent = loadImage("assets/ending/qrpresent.png");
+  savecomplete_false = loadImage("assets/ending/savecomplete_false.png");
+  savecomplete_true[0] = loadImage("assets/ending/savecomplete_true.png");
+  savecomplete = new button(savecomplete_true, savecomplete_false);
+  
   
   basicFont = loadFont('assets/DX가을동화Md.ttf');
   
@@ -344,11 +366,11 @@ function setup() {
   
   tagDiv = createDiv();
   // position it:
-  tagDiv.position(30, 30);
-  
+  tagDiv.position(430, 245);
+  slider = createSlider(1, 50, 8);
+  slider.remove();
   mycanvas = createCanvas(1280, 720);
-  music_mainScreen.loop();
-  music_mainScreen.stop();
+
   musicPlay();
   drawings = createGraphics(height, height);
   finalphoto = createGraphics(1000,700);
@@ -459,6 +481,7 @@ let selectPhotoPage = false;
 let selectFramePage = false;
 let saveGalleryPopup = false;
 let sharePhotoPage = false;
+let ending = false;
 
 
 let goIntro_animation = false;
@@ -468,7 +491,7 @@ let goDrawMask = false;
 let goPhoto = false;
 let goShare = false;
 let showPOPUP =false;
-
+let goEnding = false; 
 
 let back_framenum = 0;
 let i = 0;
@@ -642,8 +665,13 @@ function draw() {
     if (i % 8 == 0) {
       back_framenum++;
     }
-
-    image(background00[back_framenum % 7], 0, 0); // 타이틀 화면
+    if(easteregg){
+      background(color("#4F7C8C"));
+      image(background_christmas[back_framenum % 7], 0, 0); // 타이틀 화면
+    }else{
+      image(background00[back_framenum % 7], 0, 0); // 타이틀 화면
+    }
+    
     mode = 0;
 
     if (mouseX > 290 && mouseX < 420 && mouseY > 85 && mouseY < 235) {
@@ -691,7 +719,11 @@ function draw() {
     fill("#405381");
     text(ghost1_chats[chatnum%ghost1_chats.length],1065,180);
     if(chatnum>16){
-      letitSnow();
+      easteregg = true;
+      
+    }
+    if(easteregg){
+       letitSnow();
     }
     
     
@@ -771,7 +803,8 @@ function draw() {
           
           translate(- points[33]._x,points[33]._y )
           rotate(atan2(points[0]._y-points[16]._y,-points[0]._x+ points[16]._x));
-          image(facefilter[facefilterNum % facefilter.length],0,-50,dist(points[0]._x,points[0]._y,points[16]._x,points[16]._y)*2,dist(points[33]._x,points[33]._y,points[8]._x,points[8]._y)*4.8);
+          
+          image(facefilter[facefilterNum % facefilter.length],0,-dist(points[0]._x,points[0]._y,points[16]._x,points[16]._y)/6,dist(points[0]._x,points[0]._y,points[16]._x,points[16]._y)*2,dist(points[33]._x,points[33]._y,points[8]._x,points[8]._y)*4.8);
           
           
           pop();
@@ -845,18 +878,34 @@ function draw() {
     } else {
       drawMask_help.mouseNotOver();
     }
-
+    
+    fill("#405381");
+    text("크기\n조절",170,330);
+    text("다 지우고 싶으면\n'스페이스바'를\n누르렴",1150,300);
+    
+    if(brushMode == 0){
+      fill(curr_brush_color);
+    ellipse(170,420,slider.value()+5,slider.value()+5);
+    }else{
+      fill(255);
+      ellipse(170,420,slider.value()+5,slider.value()+5);
+    }
+  
+    
+    let brushsize = slider.value();
     if (mouseIsPressed) {
       if (drawstart > 50 && brushMode == 0) {
+        
         drawings.noErase();
-        drawings.strokeWeight(8);
+        drawings.strokeWeight(brushsize);
         drawings.stroke(curr_brush_color);
         drawings.line(mouseX - 280, mouseY, pmouseX - 280, pmouseY);
       }
 
       if (brushMode == 1) {
+        
         drawings.erase();
-        drawings.strokeWeight(40);
+        drawings.strokeWeight(brushsize);
         drawings.line(mouseX - 280, mouseY, pmouseX - 280, pmouseY);
       }
 
@@ -880,6 +929,7 @@ function draw() {
   }
   if (checkMaskPage) {
     cursor();
+    
     goDrawMask = false;
     goPhoto = false;
 
@@ -922,7 +972,7 @@ function draw() {
           
           translate(- points[33]._x,points[33]._y)
           rotate(atan2(points[0]._y-points[16]._y,-points[0]._x+ points[16]._x));
-          image(drawings,0,-50,dist(points[0]._x,points[0]._y,points[16]._x,points[16]._y)*2,dist(points[33]._x,points[33]._y,points[8]._x,points[8]._y)*5.5);
+          image(drawings,0,-dist(points[0]._x,points[0]._y,points[16]._x,points[16]._y)/6,dist(points[0]._x,points[0]._y,points[16]._x,points[16]._y)*2,dist(points[33]._x,points[33]._y,points[8]._x,points[8]._y)*5.5);
           
           
           pop();
@@ -971,9 +1021,9 @@ function draw() {
           translate(- points[33]._x,points[33]._y)
           rotate(atan2(points[0]._y-points[16]._y,-points[0]._x+ points[16]._x));
           if(fromDrawing){
-            image(drawings,0,-50,dist(points[0]._x,points[0]._y,points[16]._x,points[16]._y)*2,dist(points[33]._x,points[33]._y,points[8]._x,points[8]._y)*5.5);
+            image(drawings,0,-dist(points[0]._x,points[0]._y,points[16]._x,points[16]._y)/6,dist(points[0]._x,points[0]._y,points[16]._x,points[16]._y)*2,dist(points[33]._x,points[33]._y,points[8]._x,points[8]._y)*5.5);
           }else{
-            image(facefilter[facefilterNum % facefilter.length],0,-50,dist(points[0]._x,points[0]._y,points[16]._x,points[16]._y)*2,dist(points[33]._x,points[33]._y,points[8]._x,points[8]._y)*4.8);
+            image(facefilter[facefilterNum % facefilter.length],0,-dist(points[0]._x,points[0]._y,points[16]._x,points[16]._y)/6,dist(points[0]._x,points[0]._y,points[16]._x,points[16]._y)*2,dist(points[33]._x,points[33]._y,points[8]._x,points[8]._y)*4.8);
           }
           
           
@@ -1038,6 +1088,8 @@ function draw() {
         photoindex++;
       }
     }
+    
+  
     right.display();
     left.display();
     saveGallery.display();
@@ -1087,7 +1139,12 @@ function draw() {
     image(raw_photos[final_photos[2]],645,55,400,300);
     image(raw_photos[final_photos[3]],645,365,400,300);
     image(frames[frameNum%frames.length],140,10,1000,700);
-    
+    textAlign(CENTER, CENTER);
+    textSize(20);
+    fill("#2E2A2A");
+    let array_text =[year(),'.',month(),'.',day(),'.'];
+    let today_date = join(array_text,"");
+    text(today_date,1050,685);
     
     if(saveGalleryPopup){
       image(togallery_popup,0,0);
@@ -1120,11 +1177,109 @@ function draw() {
   }
   
   if(sharePhotoPage){
-    
+    savecomplete.display();
+    image(qrpresent,0,0);
     tagDiv.html(qrImg);
-
+    textSize(25);
+    textAlign(CENTER, TOP);
+      text('우리가 준비한 선물이야!\n너만의 인생사진을 오랫동안\n간직하고 싶다면,\n아래에 있는 QR코드를 찍어서\n사진을 휴대폰에 저장할 수 있어!',227,100);
+    text('선물이 제대로 나올때까지\n3초만 기다려줘~',940,80);
+    if (mouseX > 980 && mouseX < 1260 && mouseY > 573 && mouseY < 691) {
+      savecomplete.mouseOver(0);
+      goEnding = true;
+      } else {
+      savecomplete.mouseNotOver();
+      goEnding = false;
+  }
   }
   
+  if(ending){
+    i++;
+    
+    if(i%8==0){
+      back_framenum++;
+    }
+    imageMode(CORNER);
+    translate(0,0);
+    image(ending_ghosts[back_framenum%ending_ghosts.length],0,0);
+    
+    
+    if(fromDrawing){
+
+      imageMode(CENTER);
+      push();
+      translate(147,164)
+      rotate(atan2(50,175));
+      image(drawings,0,0,200,200);
+      pop();
+      
+      push();
+      translate(165,432)
+      rotate(atan2(50,175));
+      image(drawings,0,0,175,175);
+      pop();
+      
+      push();
+      translate(1121,114)
+      rotate(atan2(-99,175));
+      image(drawings,0,0,180,175);
+      pop();
+      
+      push();
+      translate(1129,405);
+      rotate(atan2(-70,175));
+      image(drawings,0,0,175,160);
+      pop();
+    }else{
+
+      imageMode(CENTER);
+      push();
+      translate(147,164);
+      rotate(atan2(50,175));
+      image(facefilter[facefilterNum % facefilter.length],0,0,200,200);
+      pop();
+      
+      push();
+      translate(165,432);
+      rotate(atan2(50,175));
+      image(facefilter[facefilterNum % facefilter.length],0,0,175,175);
+      pop();
+      
+      push();
+      translate(1121,114);
+      rotate(atan2(-99,175));
+      image(facefilter[facefilterNum % facefilter.length],0,0,180,175);
+      pop();
+      
+      push();
+      translate(1129,405);
+      rotate(atan2(-70,175));
+      image(facefilter[facefilterNum % facefilter.length],0,0,175,160);
+      pop();
+
+    }
+    textSize(25);
+    textAlign(CENTER, TOP);
+    translate(0,0);
+      text('길다면 길고, 짧다면 짧은 가을학기가 끝났네!\n\n개강할 때까지만 해도 여름의 끝자락이었는데, 어느새 옷깃을 여며야 하는 날씨가 됐구나.\n\n너의 학기는 어땠어?\n누군가는 만족스러운 세 달을 보냈을 거고, 아닌 친구도 있을거야.\n\n아니라고 해도 괜찮아. \n누가 뭐래도 너의 하루하루는 세상에서 제일 소중하니까.\n\n너는 이번 연말에도, 다가올 내년에도, 그리고 앞으로도 행복할거야.\n\n우리 유령들이, 그리고 너를 사랑하는 사람들이 항상 곁에서 응원하며 지켜볼 거니까!\n\n\n정말 고생 많았어.',width/2,height-i/2);
+    
+    imageMode(CORNER); 
+    if(i/2>=height){
+      if (dist(mouseX, mouseY, width / 2, height / 2+100) < 75) {
+      fill("#405381");
+      circle(width / 2, height / 2+100, 150);
+      fill(255);
+      text("처음으로",width / 2, height / 2 +90);
+      all_clear = true;
+    } else {
+      fill(255);
+      circle(width / 2, height / 2+100, 150);
+      fill("#405381");
+      text("처음으로",width / 2, height / 2+90);
+      all_clear = false;
+    }
+    }
+  }
   
   if (galleryPage) {
     i++;
@@ -1166,11 +1321,30 @@ function gotFaces(error, result) {
 }
 
 function musicPlay() {
+  
+  
   if (mainScreen || intro) {
+    if(easteregg){
+      music_nextScreen.stop();
+      music_mainScreen.stop();
+      music_ending.stop();
+    if (!music_mainScreen_christmas.isPlaying()) music_mainScreen_christmas.loop();
+    }else{
+      music_ending.stop();
+      music_nextScreen.stop();
+      music_mainScreen_christmas.stop();
+      if (!music_mainScreen.isPlaying()) music_mainScreen.loop();
+    }
+  }else if(ending){
     music_nextScreen.stop();
-    if (!music_mainScreen.isPlaying()) music_mainScreen.loop();
-  } else {
+    music_mainScreen_christmas.stop();
     music_mainScreen.stop();
+    if (!
+        music_ending.isPlaying()) music_ending.loop();
+  } else {
+    music_ending.stop();
+    music_mainScreen.stop();
+    music_mainScreen_christmas.stop();
     if (!music_nextScreen.isPlaying()) {
       music_nextScreen.loop();
     }
@@ -1178,7 +1352,8 @@ function musicPlay() {
 }
 
 function letitSnow()
-{  for (let l = 0; l < SNOWFLAKES.length; l++) {
+{ 
+  for (let l = 0; l < SNOWFLAKES.length; l++) {
     const LAYER = SNOWFLAKES[l];
     fill("#ffffff");
     for (let i = 0; i < LAYER.length; i++) {
@@ -1241,6 +1416,11 @@ function mousePressed() {
         clear();
         drawMaskPage = true;
         mainScreen = false;
+        slider = createSlider(1, 50, 8);
+        slider.position(110,320);
+        slider.size(200,30);
+        slider.style("transform","rotate(90deg)");
+
         buttonSound();
         break;
       case 3:
@@ -1257,6 +1437,10 @@ function mousePressed() {
   } else {
     if (gohome) {
       chatnum=0;
+      slider.remove();
+      tagDiv.remove();
+      tagDiv = createDiv();
+      tagDiv.position(430, 245);
       turnOffFaceDetect();
       turnOffCapture();
       mode = 0;
@@ -1282,6 +1466,7 @@ function mousePressed() {
       raw_photos[i] = createGraphics(800,600);
       on_photos[i] = false;
       photos_selected[i] = false;
+      ending = false;
       }
     }
   }
@@ -1315,6 +1500,7 @@ function mousePressed() {
       }  
     
     if (goCheckMask) {
+      slider.remove();
       turnOnFaceDetect();
       turnOnCapture();
       checkMaskPage = true;
@@ -1411,8 +1597,23 @@ function mousePressed() {
         showPOPUP = false;
       }
     }
-  
-  
+  if(sharePhotoPage){
+    if(goEnding){
+      buttonSound();
+      i = 0;
+      tagDiv.remove();
+      tagDiv = createDiv();
+      ending = true;
+      goEnding=false;
+      sharePhotoPage = false;
+    }
+  }
+  if(ending){
+    if(all_clear){
+      all_clear = false;
+      fromStart();
+    }
+  }
 }
 function takepicture(i) {
   
@@ -1424,6 +1625,7 @@ function takepicture(i) {
   
 }
 function fromStart(){
+  slider.remove();
   skip.hide();
   turnOffFaceDetect();
   ghost1.stoptalking();
@@ -1431,6 +1633,7 @@ function fromStart(){
   ghost3.stoptalking();
   ghost4.stoptalking();
   intro = true;
+  easteregg = false;
   x1 = 0;
   x2 = -1280;
   intro_animation = false;
@@ -1453,9 +1656,11 @@ function fromStart(){
   goPhoto = false;
   goShare = false;
   showPOPUP =false;
+  ending = false;
+  all_clear = false;
   back_framenum = 0;
   i = 0;
-  facefilterNum = 1;
+  facefilterNum = 0;
   brushMode = 0;
   browseMaskPage_mode = 0;
   drawstart = 0;
@@ -1466,6 +1671,14 @@ function fromStart(){
 }
 
 function keyPressed() {
+  if(drawMaskPage){
+    
+    if (key == ' ') {
+    drawings.clear();
+    }
+  }
+  
+  
   if(takePhotoPage){
     
     if (key == ' '&&picturenum<8) {
