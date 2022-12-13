@@ -1516,6 +1516,10 @@ function mousePressed() {
       checkMaskPage = false;
       drawMaskPage = true;
       goDrawMask = false;
+      slider = createSlider(1, 50, 8);
+      slider.position(110,320);
+      slider.size(200,30);
+      slider.style("transform","rotate(90deg)");
       buttonSound();
     }
     if (goPhoto) {
