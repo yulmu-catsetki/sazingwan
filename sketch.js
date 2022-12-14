@@ -81,7 +81,7 @@ let download_false;
 let gallery_background;
 let gallery_light = [];
 let galleryPhotos = [];
-
+let specialthanks;
 
 let basicFont; 
 let picturenum =0;
@@ -104,7 +104,7 @@ let no_true =[];
 let togallery_popup;
 
 let frames =[];
-let framesback =['#c9bfd8','#6c7d45','#6a92b5','#f8d9ae'];
+let framesback =['#c9bfd8','#6c7d45','#6a92b5','#f8d9ae','#95cae0','#bf544c'];
 let fromDrawing = false;
 let explains =[];
 let ghost1_bubble;
@@ -164,7 +164,7 @@ function preload() {
   download_false=loadImage("assets/download_false.png");
   download = new button(download_true,download_false);
   
-  for(let i=1;i<=4;i++){
+  for(let i=1;i<=6;i++){
     let array1 = ["assets/frame/frame", i, "_top.png"];
     imgName = join(array1, "");
     frames[i - 1] = loadImage(imgName);
@@ -306,8 +306,8 @@ function preload() {
   no_false = loadImage("assets/no_false.png");
   no_true[0] = loadImage("assets/no_true.png");
   no = new button(no_true, no_false);
-
-  togallery_popup = loadImage("assets/togallery_popup.png");;
+  specialthanks = loadImage("assets/specialthanks.png");
+  togallery_popup = loadImage("assets/togallery_popup.png");
   
   for (let i = 2; i <= 17; i++) {
     let array1 = ["assets/Dice-", i, ".png"];
@@ -482,7 +482,7 @@ let selectFramePage = false;
 let saveGalleryPopup = false;
 let sharePhotoPage = false;
 let ending = false;
-
+let thankingPage = false;
 
 let goIntro_animation = false;
 let goCheckMask = false;
@@ -698,6 +698,10 @@ function draw() {
     } else {
       gallery.mouseNotOver();
     }
+    if (mouseX > 650 && mouseX < 700 && mouseY > 222 && mouseY < 240) {
+      mode = 5;
+    } 
+    
 
     browseMask.display(); // 각각의 버튼이 보이게 함
     
@@ -1261,7 +1265,7 @@ function draw() {
     textSize(25);
     textAlign(CENTER, TOP);
     translate(0,0);
-      text('길다면 길고, 짧다면 짧은 가을학기가 끝났네!\n\n개강할 때까지만 해도 여름의 끝자락이었는데, 어느새 옷깃을 여며야 하는 날씨가 됐구나.\n\n너의 학기는 어땠어?\n누군가는 만족스러운 세 달을 보냈을 거고, 아닌 친구도 있을거야.\n\n아니라고 해도 괜찮아. \n누가 뭐래도 너의 하루하루는 세상에서 제일 소중하니까.\n\n너는 이번 연말에도, 다가올 내년에도, 그리고 앞으로도 행복할거야.\n\n우리 유령들이, 그리고 너를 사랑하는 사람들이 항상 곁에서 응원하며 지켜볼 거니까!\n\n\n정말 고생 많았어.',width/2,height-i/2);
+      text('길다면 길고, 짧다면 짧은 가을학기가 끝났네!\n\n개강할 때까지만 해도 여름의 끝자락이었는데, 어느새 옷깃을 여며야 하는 날씨가 됐구나.\n\n너의 학기는 어땠어?\n누군가는 만족스러운 세 달을 보냈을 거고, 아닌 친구도 있을거야.\n\n아니라고 해도 괜찮아. \n누가 뭐래도 너의 하루하루는 세상에서 제일 소중하니까.\n\n너는 이번 연말에도, 다가올 내년에도, 그리고 앞으로도 행복할거야.\n\n우리 정령들이, 그리고 너를 사랑하는 사람들이 항상 곁에서 응원하며 지켜볼 거니까!\n\n\n정말 고생 많았어.',width/2,height-i/2);
     
     imageMode(CORNER); 
     if(i/2>=height){
@@ -1279,6 +1283,9 @@ function draw() {
       all_clear = false;
     }
     }
+  }
+  if(thankingPage){
+    image(specialthanks,0,0,1280,720);
   }
   
   if (galleryPage) {
@@ -1432,6 +1439,11 @@ function mousePressed() {
         buttonSound();
         chatnum++;
         break;
+      case 5:
+        thankingPage = true;
+        mainScreen = false;
+        buttonSound();
+        break;
         
     }
   } else {
@@ -1467,6 +1479,7 @@ function mousePressed() {
       on_photos[i] = false;
       photos_selected[i] = false;
       ending = false;
+      thankingPage = false;
       }
     }
   }
@@ -1516,6 +1529,10 @@ function mousePressed() {
       checkMaskPage = false;
       drawMaskPage = true;
       goDrawMask = false;
+      slider = createSlider(1, 50, 8);
+      slider.position(110,320);
+      slider.size(200,30);
+      slider.style("transform","rotate(90deg)");
       buttonSound();
     }
     if (goPhoto) {
@@ -1658,6 +1675,7 @@ function fromStart(){
   showPOPUP =false;
   ending = false;
   all_clear = false;
+  thankingPage = false;
   back_framenum = 0;
   i = 0;
   facefilterNum = 0;
